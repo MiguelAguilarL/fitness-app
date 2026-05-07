@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { SafeAreaView, ScrollView, StatusBar as RNStatusBar, Text, View } from "react-native";
+import { ScrollView, StatusBar as RNStatusBar, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { questionnaireData } from "../utils/questionnaireData";
 import QuestionHeader from "../components/Questionnaire/QuestionHeader";
 import ProgressBar from "../components/ProgressBar";
@@ -35,21 +36,23 @@ export default function QuestionnaireScreen() {
       <View className="absolute -top-24 left-6 h-56 w-56 rounded-full bg-[#1b2447] opacity-30" />
       <View className="absolute right-0 top-24 h-64 w-64 rounded-full bg-[#1a2041] opacity-25" />
 
-      <QuestionHeader stepLabel={currentQuestion.stepLabel} onBack={handleBack} />
-      <ProgressBar progress={currentQuestion.progress} />
+      <SafeAreaView edges={["top", "bottom"]} className="flex-1">
+        <View className="px-6 pt-4">
+          <QuestionHeader stepLabel={currentQuestion.stepLabel} onBack={handleBack} />
+          <ProgressBar progress={currentQuestion.progress} />
+        </View>
 
-      <View className="flex-1">
-        <ScrollView contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-          <View className="px-8 pt-20">
+        <View className="flex-1 px-8 justify-center">
+          <View>
             <Text className="text-center text-[26px] font-extrabold text-[#dfe5ff]">
-            {currentQuestion.title}
+              {currentQuestion.title}
             </Text>
-            <Text className="mt-6 text-center text-[28px] leading-10 text-[#d0bfcd]">
-            {currentQuestion.subtitle}
+            <Text className="mt-4 text-center text-[20px] leading-8 text-[#d0bfcd]">
+              {currentQuestion.subtitle}
             </Text>
           </View>
 
-          <View className="mt-14">
+          <View className="mt-8">
             {currentQuestion.options.map((option) => (
               <QuestionCard
                 key={option.id}
@@ -60,12 +63,12 @@ export default function QuestionnaireScreen() {
               />
             ))}
           </View>
-        </ScrollView>
+        </View>
 
-        <View className="pb-2 pt-2">
+        <View className="px-6 pb-6">
           <PrimaryButton label="Siguiente" onPress={handleNext} />
         </View>
-      </View>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }

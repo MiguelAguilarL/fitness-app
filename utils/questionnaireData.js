@@ -32,7 +32,7 @@ export const questionnaireData = [
     options: [
       { id: "2-3", label: "2 a 3 días", icon: "calendar" },
       { id: "4-5", label: "4 a 5 días", icon: "calendar" },
-      { id: "6", label: "6 días o más", icon: "calendar" },
+      { id: "6-7", label: "6 a 7 días", icon: "calendar" },
     ],
   },
   {

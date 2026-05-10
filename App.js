@@ -1,13 +1,12 @@
 import "./global.css";
 import { StatusBar } from "expo-status-bar";
-import StartScreen from "./app/StartScreen";
-import QuestionnaireScreen from "./app/QuestionnaireScreen";
+import RootNavigator from "./navigation/RootNavigator";
 
 export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <StartScreen />
+      <RootNavigator />
     </>
   );
 }

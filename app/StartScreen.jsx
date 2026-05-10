@@ -1,13 +1,15 @@
 import { View, ScrollView, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import StartHeader from "../components/Start/StartHeader";
 import MetricsGrid from "../components/Start/MetricsGrid";
 import ActionButtons from "../components/Start/ActionButtons";
 
 export default function StartScreen() {
+  const navigation = useNavigation();
+
   const handleGetStarted = () => {
-    // TODO: Navegar a QuestionnaireScreen o siguiente pantalla
-    console.log("Get Started pressed");
+    navigation.navigate("Questionnaire");
   };
 
   const backgroundImage = {

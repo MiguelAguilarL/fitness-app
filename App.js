@@ -1,12 +1,12 @@
 import "./global.css";
 import { StatusBar } from "expo-status-bar";
-import FitnessHomeScreen from "./app/FitnessHomeScreen";
+import RootNavigator from "./navigation/RootNavigator";
 
 export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <FitnessHomeScreen />
+      <RootNavigator />
     </>
   );
 }

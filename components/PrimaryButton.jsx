@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import React, { useRef } from "react";
+import { Pressable, Text, View, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 const sizeClasses = {

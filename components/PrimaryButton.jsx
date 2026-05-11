@@ -2,34 +2,41 @@ import React, { useRef } from "react";
 import { Pressable, Text, View, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-export default function PrimaryButton({ label, onPress }) {
-  const scale = useRef(new Animated.Value(1)).current;
+const sizeClasses = {
+  md: {
+    container: "mx-4 mb-6 rounded-[24px] bg-[#d9adff] px-6 py-7",
+    text: "text-[26px]",
+    icon: 30,
+    gap: "gap-3",
+  },
+  card: {
+    container: "mx-0 rounded-[22px] bg-[#d9adff] px-6 py-4",
+    text: "text-[20px]",
+    icon: 24,
+    gap: "gap-2",
+  },
+  sm: {
+    container: "mx-0 rounded-full bg-[#d9adff] px-5 py-3",
+    text: "text-[18px]",
+    icon: 18,
+    gap: "gap-2",
+  },
+};
 
-  const animateTo = (toValue) => {
-    Animated.spring(scale, {
-      toValue,
-      useNativeDriver: true,
-      friction: 6,
-      tension: 80,
-    }).start();
-  };
+export default function PrimaryButton({ label, onPress, size = "md", full = false }) {
+  const variant = sizeClasses[size] ?? sizeClasses.md;
+  const containerClass = full ? `${variant.container} w-full mx-0` : variant.container;
 
   return (
-    <Animated.View
-      style={{ transform: [{ scale }], shadowColor: "#4d1595", shadowOpacity: 0.12, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } }}
+    <Pressable
+      onPress={onPress}
+      className={containerClass}
+      style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1 }]}
     >
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => animateTo(0.98)}
-        onPressOut={() => animateTo(1)}
-        className="mx-4 mb-6 rounded-[24px] bg-[#d9adff] px-6 py-7"
-        style={({ pressed }) => [{ opacity: pressed ? 0.96 : 1 }]}
-      >
-        <View className="flex-row items-center justify-center gap-3">
-          <Text className="text-[26px] font-extrabold text-[#4d1595]">{label}</Text>
-          <Feather name="arrow-right" size={30} color="#4d1595" />
-        </View>
-      </Pressable>
-    </Animated.View>
+      <View className={`flex-row items-center justify-center ${variant.gap}`}>
+        <Text className={`font-extrabold text-[#4d1595] ${variant.text}`}>{label}</Text>
+        <Feather name="arrow-right" size={variant.icon} color="#4d1595" />
+      </View>
+    </Pressable>
   );
 }

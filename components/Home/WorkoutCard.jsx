@@ -1,8 +1,10 @@
 import React from 'react'
 import { View, Text, ImageBackground } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import PrimaryButton from '../PrimaryButton'
 
 export default function WorkoutCard() {
+  const navigation = useNavigation()
   return (
     <ImageBackground
       source={{
@@ -40,7 +42,12 @@ export default function WorkoutCard() {
           </View>
 
           <View className="mt-3 w-full">
-            <PrimaryButton label="Iniciar Entrenamiento" size="card" full />
+            <PrimaryButton 
+              label="Iniciar Entrenamiento" 
+              size="card" 
+              full 
+              onPress={() => navigation.navigate('FitnessHome')}
+            />
           </View>
         </View>
       </View>

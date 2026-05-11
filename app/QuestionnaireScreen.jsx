@@ -6,8 +6,10 @@ import QuestionHeader from "../components/Questionnaire/QuestionHeader";
 import ProgressBar from "../components/ProgressBar";
 import QuestionCard from "../components/Questionnaire/QuestionCard";
 import PrimaryButton from "../components/PrimaryButton";
+import { useNavigation } from '@react-navigation/native';
 
 export default function QuestionnaireScreen() {
+  const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
 
@@ -26,7 +28,11 @@ export default function QuestionnaireScreen() {
     if (currentIndex < questionnaireData.length - 1) {
       setCurrentIndex((value) => value + 1);
       setSelectedOptionId(null);
+      return;
     }
+
+    // Última pregunta: navegar a Home)
+    navigation.navigate('Home');
   };
 
   return (

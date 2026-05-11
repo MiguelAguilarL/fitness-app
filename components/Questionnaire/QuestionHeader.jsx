@@ -1,11 +1,20 @@
 import { View, Text, Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function QuestionHeader({ stepLabel, onBack }) {
+  const navigation = useNavigation();
+  
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    }
+  };
+  
   return (
     <View className="flex-row items-center justify-between px-5 pt-4">
       <Pressable
-        onPress={onBack}
+        onPress={handleBack}
         hitSlop={12}
         className="h-11 w-11 items-start justify-center"
       >

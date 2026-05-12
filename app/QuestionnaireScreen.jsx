@@ -31,8 +31,8 @@ export default function QuestionnaireScreen() {
       return;
     }
 
-    // Última pregunta: navegar a Home)
-    navigation.navigate('Home');
+    // Última pregunta: navegar a la navegación de pestañas principal
+    navigation.navigate('MainTabs');
   };
 
   return (

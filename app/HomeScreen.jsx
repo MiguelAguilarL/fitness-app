@@ -4,12 +4,11 @@ import HomeHeader from '../components/Home/HomeHeader'
 import StreakRow from '../components/Home/StreakRow'
 import WorkoutCard from '../components/Home/WorkoutCard'
 import SessionTile from '../components/Home/SessionTile'
-import BottomNav from '../components/Home/BottomNav'
 
 export default function HomeScreen() {
   return (
     <View className="flex-1 bg-[#07060a]">
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 110 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 120 }}>
         <HomeHeader userName="Usuario" />
 
         <StreakRow />
@@ -24,8 +23,6 @@ export default function HomeScreen() {
 
         <SessionTile />
       </ScrollView>
-
-      <BottomNav />
     </View>
   )
 }

@@ -23,12 +23,12 @@ export default function BottomNav() {
         <Text className="text-[#7b728e] text-[11px] mt-1 font-semibold">SESION</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-1 items-center justify-center" onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity className="flex-1 items-center justify-center" onPress={() => navigation.navigate('Performance')}>
         <Feather name="trending-up" size={20} color="#7b728e" />
         <Text className="text-[#7b728e] text-[11px] mt-1 font-semibold">PROGRESO</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-1 items-center justify-center" onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity className="flex-1 items-center justify-center" onPress={() => navigation.navigate('Profile')}>
         <Feather name="user" size={20} color="#7b728e" />
         <Text className="text-[#7b728e] text-[11px] mt-1 font-semibold">PERFIL</Text>
       </TouchableOpacity>

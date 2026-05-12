@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ScrollView, StatusBar as RNStatusBar, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StatusBar as RNStatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { questionnaireData } from "../utils/questionnaireData";
 import QuestionHeader from "../components/Questionnaire/QuestionHeader";
@@ -7,13 +7,19 @@ import ProgressBar from "../components/ProgressBar";
 import QuestionCard from "../components/Questionnaire/QuestionCard";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigation } from '@react-navigation/native';
+import { useQuestionnaire } from "../context/QuestionnaireContext";
 
 export default function QuestionnaireScreen() {
   const navigation = useNavigation();
+  const { answers, setAnswer, submitQuestionnaire } = useQuestionnaire();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
 
   const currentQuestion = questionnaireData[currentIndex];
+
+  useEffect(() => {
+    setSelectedOptionId(answers[currentQuestion.id] ?? null);
+  }, [answers, currentQuestion.id]);
 
   const handleBack = () => {
     if (currentIndex === 0) {
@@ -21,18 +27,20 @@ export default function QuestionnaireScreen() {
     }
 
     setCurrentIndex((value) => value - 1);
-    setSelectedOptionId(null);
   };
 
-  const handleNext = () => {
-    if (currentIndex < questionnaireData.length - 1) {
-      setCurrentIndex((value) => value + 1);
-      setSelectedOptionId(null);
+  const handleNext = async () => {
+    if (!selectedOptionId) {
       return;
     }
 
-    // Última pregunta: navegar a la navegación de pestañas principal
-    navigation.navigate('MainTabs');
+    if (currentIndex < questionnaireData.length - 1) {
+      setCurrentIndex((value) => value + 1);
+      return;
+    }
+
+    await submitQuestionnaire();
+    navigation.navigate('QuestionnaireSummary');
   };
 
   return (
@@ -65,14 +73,17 @@ export default function QuestionnaireScreen() {
                 label={option.label}
                 icon={option.icon}
                 selected={selectedOptionId === option.id}
-                onPress={() => setSelectedOptionId(option.id)}
+                onPress={() => {
+                  setSelectedOptionId(option.id);
+                  setAnswer(currentQuestion.id, option.id);
+                }}
               />
             ))}
           </View>
         </View>
 
         <View className="px-6 pb-6">
-          <PrimaryButton label="Siguiente" onPress={handleNext} />
+          <PrimaryButton label="Siguiente" onPress={handleNext} disabled={!selectedOptionId} />
         </View>
       </SafeAreaView>
     </SafeAreaView>

@@ -23,15 +23,16 @@ const sizeClasses = {
   },
 };
 
-export default function PrimaryButton({ label, onPress, size = "md", full = false }) {
+export default function PrimaryButton({ label, onPress, size = "md", full = false, disabled = false }) {
   const variant = sizeClasses[size] ?? sizeClasses.md;
   const containerClass = full ? `${variant.container} w-full mx-0` : variant.container;
 
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       className={containerClass}
-      style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1 }]}
+      style={({ pressed }) => [{ opacity: disabled ? 0.55 : pressed ? 0.92 : 1 }]}
     >
       <View className={`flex-row items-center justify-center ${variant.gap}`}>
         <Text className={`font-extrabold text-[#4d1595] ${variant.text}`}>{label}</Text>

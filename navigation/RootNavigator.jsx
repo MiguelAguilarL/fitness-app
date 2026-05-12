@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 import StartScreen from '../app/StartScreen';
 import QuestionnaireScreen from '../app/QuestionnaireScreen';
+import QuestionnaireSummaryScreen from '../app/QuestionnaireSummaryScreen';
 import HomeScreen from '../app/HomeScreen';
 import FitnessHomeScreen from '../app/FitnessHomeScreen';
 import ActiveExerciseScreen from '../app/ActiveExerciseScreen';
@@ -78,6 +79,7 @@ export default function RootNavigator() {
       <Stack.Navigator initialRouteName="Start" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Start" component={StartScreen} />
         <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
+        <Stack.Screen name="QuestionnaireSummary" component={QuestionnaireSummaryScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Rest" component={RestScreen} />
       </Stack.Navigator>

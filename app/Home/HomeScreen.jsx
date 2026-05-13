@@ -1,10 +1,10 @@
 import React from 'react'
 import { ScrollView, View, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import HomeHeader from '../components/Home/HomeHeader'
-import StreakRow from '../components/Home/StreakRow'
-import WorkoutCard from '../components/Home/WorkoutCard'
-import SessionTile from '../components/Home/SessionTile'
+import HomeHeader from '../../components/Home/HomeHeader'
+import StreakRow from '../../components/Home/StreakRow'
+import WorkoutCard from '../../components/Home/WorkoutCard'
+import SessionTile from '../../components/Home/SessionTile'
 
 export default function HomeScreen() {
   return (

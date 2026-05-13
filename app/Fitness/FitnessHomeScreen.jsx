@@ -1,12 +1,12 @@
 import React from 'react'
 import { ScrollView, StatusBar, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import FitnessWorkoutHeader from '../components/FitnessHome/FitnessWorkoutHeader'
-import FitnessWarmupCard from '../components/FitnessHome/FitnessWarmupCard'
-import FitnessSectionTitle from '../components/FitnessHome/FitnessSectionTitle'
-import FitnessExerciseCard from '../components/FitnessHome/FitnessExerciseCard'
-import FitnessTipCard from '../components/FitnessHome/FitnessTipCard'
-import FitnessStartWorkoutButton from '../components/FitnessHome/FitnessStartWorkoutButton'
+import FitnessWorkoutHeader from '../../components/FitnessHome/FitnessWorkoutHeader'
+import FitnessWarmupCard from '../../components/FitnessHome/FitnessWarmupCard'
+import FitnessSectionTitle from '../../components/FitnessHome/FitnessSectionTitle'
+import FitnessExerciseCard from '../../components/FitnessHome/FitnessExerciseCard'
+import FitnessTipCard from '../../components/FitnessHome/FitnessTipCard'
+import FitnessStartWorkoutButton from '../../components/FitnessHome/FitnessStartWorkoutButton'
 
 const exercises = [
   {

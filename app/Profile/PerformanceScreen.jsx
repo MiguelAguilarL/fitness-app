@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StatusBar, TouchableOpacity } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { Feather } from '@expo/vector-icons'
-import ProgressBar from '../components/ProgressBar'
+import ProgressBar from '../../components/ProgressBar'
 
 const stats = [
   { label: 'Calorías', value: '24,500', trend: '+12%', icon: 'fire' },
@@ -74,8 +74,10 @@ export default function PerformanceScreen() {
 
           <View className="mt-5 h-44 overflow-hidden rounded-3xl bg-[#12122d] p-4 shadow-inner shadow-[#00000060]">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-[#9a80e4]">Este mes</Text>
-              <Text className="text-sm text-[#8a84b4]">+18% respecto a la semana pasada</Text>
+              <View>
+                <Text className="text-sm text-[#9a80e4]">Este mes</Text>
+                <Text className="text-sm text-[#8a84b4]">+18% respecto a la semana pasada</Text>
+              </View>
             </View>
 
             <View className="mt-4 flex-1 justify-end">

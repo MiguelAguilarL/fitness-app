@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ScrollView, StatusBar, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import ActiveExerciseHeader from '../components/ActiveExercise/ActiveExerciseHeader'
-import ExerciseInfoSection from '../components/ActiveExercise/ExerciseInfoSection'
-import ExerciseVideoCard from '../components/ActiveExercise/ExerciseVideoCard'
-import SeriesList from '../components/ActiveExercise/SeriesList'
-import TimerDisplay from '../components/ActiveExercise/TimerDisplay'
-import ExerciseControls from '../components/ActiveExercise/ExerciseControls'
+import ActiveExerciseHeader from '../../components/FitnessHome/ActiveExerciseHeader'
+import ExerciseInfoSection from '../../components/FitnessHome/ExerciseInfoSection'
+import ExerciseVideoCard from '../../components/FitnessHome/ExerciseVideoCard'
+import TechniqueButton from '../../components/FitnessHome/TechniqueButton'
+import SeriesSection from '../../components/FitnessHome/SeriesSection'
+import RestTimerSection from '../../components/FitnessHome/RestTimerSection'
 
 const exercise = {
   title: 'Remo Sentado',
@@ -23,23 +23,27 @@ const initialSeries = [
 
 const restDuration = 90
 
-export default function RestScreen() {
+export default function ActiveExerciseScreen() {
   const [series, setSeries] = useState(initialSeries)
   const [restSeconds, setRestSeconds] = useState(restDuration)
   const [isResting, setIsResting] = useState(false)
 
   useEffect(() => {
-    if (!isResting) return undefined
+    if (!isResting) {
+      return undefined
+    }
 
     const timer = setInterval(() => {
-      setRestSeconds((s) => (s > 0 ? s - 1 : 0))
+      setRestSeconds((currentSeconds) => (currentSeconds > 0 ? currentSeconds - 1 : 0))
     }, 1000)
 
     return () => clearInterval(timer)
   }, [isResting])
 
   useEffect(() => {
-    if (isResting && restSeconds === 0) setIsResting(false)
+    if (isResting && restSeconds === 0) {
+      setIsResting(false)
+    }
   }, [isResting, restSeconds])
 
   const restLabel = useMemo(() => {
@@ -56,7 +60,10 @@ export default function RestScreen() {
 
     setSeries((currentSeries) =>
       currentSeries.map((item) => {
-        if (item.id !== seriesId) return item
+        if (item.id !== seriesId) {
+          return item
+        }
+
         return { ...item, completed: nextCompleted }
       }),
     )
@@ -88,11 +95,21 @@ export default function RestScreen() {
 
         <ExerciseVideoCard image={exercise.image} />
 
-        <SeriesList completedCount={completedCount} totalCount={series.length} series={series} onToggleSeries={handleToggleSeries} />
+        <TechniqueButton label="Ver Técnica" />
 
-        <TimerDisplay duration={restDuration} timeLeft={isResting ? restSeconds : 0} onFinish={() => setIsResting(false)} />
+        <SeriesSection
+          completedCount={completedCount}
+          totalCount={series.length}
+          series={series}
+          onToggleSeries={handleToggleSeries}
+        />
 
-        <ExerciseControls onSkip={handleSkipRest} onStart={() => {}} />
+        <RestTimerSection
+          label={isResting ? restLabel : '--:--'}
+          onSkipRest={handleSkipRest}
+          progress={isResting ? restSeconds / restDuration : 0}
+          disabled={!isResting}
+        />
       </ScrollView>
     </SafeAreaView>
   )

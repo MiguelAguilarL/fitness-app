@@ -1,20 +1,45 @@
-﻿import React, { useState } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
 import DayPill from './DayPill'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 export default function StreakRow() {
-  const [selectedDay, setSelectedDay] = useState(3)
+  const [selectedDay, setSelectedDay] = useState(0)
 
-  const days = [
-    { day: 'L', dateNum: '' },
-    { day: 'M', dateNum: '' },
-    { day: 'M', dateNum: '' },
-    { day: 'J', dateNum: '24' },
-    { day: 'V', dateNum: '' },
-    { day: 'S', dateNum: '' },
-    { day: 'D', dateNum: '' },
-  ]
+  // Day letters: L (Lunes), M (Martes), M (Miércoles), J (Jueves), V (Viernes), S (Sábado), D (Domingo)
+  const dayLetters = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
+
+  // Generate the current week's days
+  const getCurrentWeek = () => {
+    const today = new Date()
+    const currentDay = today.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    // Adjust to Monday as start (0 = Monday, 6 = Sunday)
+    const mondayOffset = currentDay === 0 ? 6 : currentDay - 1
+    const monday = new Date(today)
+    monday.setDate(today.getDate() - mondayOffset)
+
+    const days = []
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + i)
+      days.push({
+        day: dayLetters[i],
+        dateNum: date.getDate().toString(),
+        fullDate: date
+      })
+    }
+    return days
+  }
+
+  const days = getCurrentWeek()
+
+  useEffect(() => {
+    // Set selectedDay to today's index
+    const today = new Date()
+    const currentDay = today.getDay()
+    const mondayOffset = currentDay === 0 ? 6 : currentDay - 1
+    setSelectedDay(mondayOffset)
+  }, [])
 
   return (
     <View style={{ marginTop: 12 }}>
@@ -36,7 +61,6 @@ export default function StreakRow() {
             day={item.day}
             dateNum={item.dateNum}
             active={selectedDay === index}
-            onPress={() => setSelectedDay(index)}
           />
         ))}
       </View>

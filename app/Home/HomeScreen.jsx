@@ -5,6 +5,7 @@ import HomeHeader from '../components/Home/HomeHeader'
 import StreakRow from '../components/Home/StreakRow'
 import WeeklySummaryWidget from '../components/FitnessHome/WeeklySummaryWidget'
 
+
 export default function HomeScreen() {
   const weeklyStats = {
     sessions: 2,

@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StatusBar, TouchableOpacity, TextInput } from '
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { Feather } from '@expo/vector-icons'
-import ProgressBar from '../components/ProgressBar'
+import ProgressBar from '../../components/ProgressBar'
 
 const quickStats = [
   { label: 'Entrenamientos', value: '128', icon: 'repeat' },
@@ -206,15 +206,8 @@ export default function ProfileScreen() {
           </View>
 
           <View className="mt-6 rounded-[32px] bg-[#101025] p-5 shadow-lg shadow-[#080812]">
-            <View className="flex-row items-center justify-between">
-              <View>
-                <Text className="text-lg font-bold text-white">Historial de entrenamientos</Text>
-                <Text className="mt-1 text-sm text-[#8e86b3]">Tus últimas tres sesiones</Text>
-              </View>
-              <TouchableOpacity onPress={() => navigation.navigate('FitnessHome')}>
-                <Text className="text-sm text-[#d6a6ff]">Ver todos</Text>
-              </TouchableOpacity>
-            </View>
+            <Text className="text-lg font-bold text-white">Historial de entrenamientos</Text>
+            <Text className="mt-1 text-sm text-[#8e86b3]">Tus últimas tres sesiones</Text>
 
             <View className="mt-4 space-y-3">
               {trainingHistory.map((item) => (

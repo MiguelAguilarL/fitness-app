@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { StatusBar as RNStatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { questionnaireData } from "../utils/questionnaireData";
-import QuestionHeader from "../components/Questionnaire/QuestionHeader";
-import ProgressBar from "../components/ProgressBar";
-import QuestionCard from "../components/Questionnaire/QuestionCard";
-import PrimaryButton from "../components/PrimaryButton";
+import { questionnaireData } from "../../utils/questionnaireData";
+import QuestionHeader from "../../components/Questionnaire/QuestionHeader";
+import ProgressBar from "../../components/ProgressBar";
+import QuestionCard from "../../components/Questionnaire/QuestionCard";
+import PrimaryButton from "../../components/PrimaryButton";
 import { useNavigation } from '@react-navigation/native';
-import { useQuestionnaire } from "../context/QuestionnaireContext";
+import { useQuestionnaire } from "../../context/QuestionnaireContext";
 
 export default function QuestionnaireScreen() {
   const navigation = useNavigation();

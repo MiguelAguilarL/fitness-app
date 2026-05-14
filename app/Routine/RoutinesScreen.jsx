@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { View, Text, ScrollView, Pressable, RefreshControl } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import PrimaryButton from '../components/PrimaryButton'
-import { loadAllRoutines, loadUserRoutines } from '../utils/routinesStorage'
+import PrimaryButton from '../../components/PrimaryButton'
+import { loadAllRoutines, loadUserRoutines } from '../../utils/routinesStorage'
 
 export default function RoutinesScreen({ navigation }) {
   const [allRoutines, setAllRoutines] = useState([])

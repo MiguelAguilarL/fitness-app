@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { saveRoutine, generateRoutineId } from '../utils/routinesStorage'
+import { saveRoutine, generateRoutineId } from '../../utils/routinesStorage'
 
 export default function CreateRoutineScreen({ navigation, route }) {
   const [routineName, setRoutineName] = useState('')

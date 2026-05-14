@@ -1,9 +1,9 @@
 import React from 'react'
 import { ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import HomeHeader from '../components/Home/HomeHeader'
-import StreakRow from '../components/Home/StreakRow'
-import WeeklySummaryWidget from '../components/FitnessHome/WeeklySummaryWidget'
+import HomeHeader from '../../components/Home/HomeHeader'
+import StreakRow from '../../components/Home/StreakRow'
+import WeeklySummaryWidget from '../../components/FitnessHome/WeeklySummaryWidget'
 
 
 export default function HomeScreen() {

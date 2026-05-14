@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import PrimaryButton from '../components/PrimaryButton'
-import { getRoutineById, deleteRoutine } from '../utils/routinesStorage'
+import PrimaryButton from '../../components/PrimaryButton'
+import { getRoutineById, deleteRoutine } from '../../utils/routinesStorage'
 
 export default function RoutineDetailScreen({ route, navigation }) {
   const { routineId } = route.params

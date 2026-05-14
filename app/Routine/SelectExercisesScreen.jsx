@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import exercises from '../utils/exercisesMock'
+import exercises from '../../utils/exercisesMock'
 
 export default function SelectExercisesScreen() {
   const nav = useNavigation()

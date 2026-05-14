@@ -1,7 +1,9 @@
 ﻿import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 
-export default function DayPill({ day = 'L', dateNum = '24', active = false, onPress }) {
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+
+export default function DayPill({ day = 'L', dateNum = '24', active = false, hasWorkout = false, onPress }) {
   const containerStyle = active
     ? {
         backgroundColor: '#d6a6ff',
@@ -29,6 +31,14 @@ export default function DayPill({ day = 'L', dateNum = '24', active = false, onP
       >
         <Text style={{ color: textStyle.color, fontSize: 12, fontWeight: '700' }}>{day}</Text>
         <Text style={{ color: textStyle.color, fontSize: 18, fontWeight: '900', marginTop: 4 }}>{dateNum}</Text>
+        {hasWorkout && (
+          <MaterialCommunityIcons
+            name="dumbbell"
+            size={14}
+            color={textStyle.color}
+            style={{ marginTop: 4 }}
+          />
+        )}
       </View>
     )
 
@@ -63,7 +73,11 @@ export default function DayPill({ day = 'L', dateNum = '24', active = false, onP
     </View>
   )
 
-  const Dot = <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#b9a9cc', marginTop: 6 }} />
+  const Dot = hasWorkout ? (
+    <MaterialCommunityIcons name="dumbbell" size={12} color="#d6a6ff" style={{ marginTop: 6 }} />
+  ) : (
+    <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#b9a9cc', marginTop: 6 }} />
+  )
 
   if (onPress) {
     return (

@@ -22,10 +22,13 @@ export default function StreakRow() {
     for (let i = 0; i < 7; i++) {
       const date = new Date(monday)
       date.setDate(monday.getDate() + i)
+      const daysSinceToday = Math.floor((today - date) / (1000 * 60 * 60 * 24))
+      const hasWorkout = daysSinceToday >= 0 && daysSinceToday <= 3
       days.push({
         day: dayLetters[i],
         dateNum: date.getDate().toString(),
-        fullDate: date
+        fullDate: date,
+        hasWorkout,
       })
     }
     return days
@@ -61,6 +64,7 @@ export default function StreakRow() {
             day={item.day}
             dateNum={item.dateNum}
             active={selectedDay === index}
+            hasWorkout={item.hasWorkout}
           />
         ))}
       </View>

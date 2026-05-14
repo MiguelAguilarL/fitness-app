@@ -7,7 +7,10 @@ import StartScreen from '../app/StartScreen';
 import QuestionnaireScreen from '../app/QuestionnaireScreen';
 import QuestionnaireSummaryScreen from '../app/QuestionnaireSummaryScreen';
 import HomeScreen from '../app/HomeScreen';
-import FitnessHomeScreen from '../app/FitnessHomeScreen';
+import RoutinesScreen from '../app/RoutinesScreen';
+import CreateRoutineScreen from '../app/CreateRoutineScreen';
+import SelectExercisesScreen from '../app/SelectExercisesScreen';
+import RoutineDetailScreen from '../app/RoutineDetailScreen';
 import ActiveExerciseScreen from '../app/ActiveExerciseScreen';
 import RestScreen from '../app/RestScreen';
 import PerformanceScreen from '../app/PerformanceScreen';
@@ -65,7 +68,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'INICIO' }} />
-      <Tab.Screen name="FitnessHome" component={FitnessHomeScreen} options={{ tabBarLabel: 'RUTINAS' }} />
+      <Tab.Screen name="FitnessHome" component={RoutinesScreen} options={{ tabBarLabel: 'RUTINAS' }} />
       <Tab.Screen name="ActiveExercise" component={ActiveExerciseScreen} options={{ tabBarLabel: 'ENTRENAR' }} />
       <Tab.Screen name="Performance" component={PerformanceScreen} options={{ tabBarLabel: 'PROGRESO' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: 'PERFIL' }} />
@@ -82,6 +85,11 @@ export default function RootNavigator() {
         <Stack.Screen name="QuestionnaireSummary" component={QuestionnaireSummaryScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Rest" component={RestScreen} />
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name="CreateRoutine" component={CreateRoutineScreen} />
+          <Stack.Screen name="SelectExercises" component={SelectExercisesScreen} />
+          <Stack.Screen name="RoutineDetail" component={RoutineDetailScreen} />
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );

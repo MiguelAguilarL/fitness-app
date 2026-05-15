@@ -7,6 +7,8 @@ import StartScreen from '../app/Home/StartScreen';
 import QuestionnaireScreen from '../app/Questionnaire/QuestionnaireScreen';
 import QuestionnaireSummaryScreen from '../app/Questionnaire/QuestionnaireSummaryScreen';
 import HomeScreen from '../app/Home/HomeScreen';
+import ExerciseScreen from '../app/ExerciseScreen';
+import ExerciseDetailScreen from '../app/ExerciseDetailScreen';
 import RoutinesScreen from '../app/Routine/RoutinesScreen';
 import CreateRoutineScreen from '../app/Routine/CreateRoutineScreen';
 import SelectExercisesScreen from '../app/Routine/SelectExercisesScreen';
@@ -84,6 +86,8 @@ export default function RootNavigator() {
         <Stack.Screen name="Start" component={StartScreen} />
         <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
         <Stack.Screen name="QuestionnaireSummary" component={QuestionnaireSummaryScreen} />
+        <Stack.Screen name="Exercises" component={ExerciseScreen} />
+        <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Rest" component={RestScreen} />
         <Stack.Group screenOptions={{ presentation: 'modal' }}>

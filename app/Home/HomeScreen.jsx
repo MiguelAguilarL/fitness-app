@@ -7,7 +7,7 @@ import HomeHeader from '../../components/Home/HomeHeader'
 import StreakRow from '../../components/Home/StreakRow'
 import WorkoutCard from '../../components/Home/WorkoutCard'
 import SessionTile from '../../components/Home/SessionTile'
-import { useQuestionnaire } from '../context/QuestionnaireContext'
+import { useQuestionnaire } from '../../context/QuestionnaireContext'
 
 export default function HomeScreen() {
   const navigation = useNavigation()

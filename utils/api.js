@@ -4,8 +4,8 @@ const EXERCISE_CACHE_STORAGE_KEY = '@fitness-app:exercise-db-cache:v3';
 const SESSION_CACHE = new Map();
 const EXERCISEDB_RESOURCE_PREFIX = 'exercises';
 export const EXERCISE_DB_DEFAULT_CONFIG = {
-	apiKey: 'b24e3673aemsh601449b1e3e9a3ep168b12jsn89b7ee24e522',
-	host: 'exercisedb.p.rapidapi.com',
+	apiKey: process.env.EXPO_PUBLIC_EXERCISEDB_API_KEY ?? '',
+	host: process.env.EXPO_PUBLIC_EXERCISEDB_HOST ?? 'exercisedb.p.rapidapi.com',
 };
 const KNOWN_TARGET_ALIASES = {
 	back: ['espalda', 'back', 'lumbar', 'dorsal'],
@@ -30,7 +30,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'chest',
 		target: 'pectorals',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/push-up-exercise-illustration.gif',
 	},
 	{
 		id: 'fallback-bodyweight-squat',
@@ -38,7 +37,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'upper legs',
 		target: 'quadriceps',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/bodyweight-squat-exercise-illustration.gif',
 	},
 	{
 		id: 'fallback-plank',
@@ -46,7 +44,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'waist',
 		target: 'abs',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/plank-exercise-illustration.gif',
 	},
 	{
 		id: 'fallback-lunge',
@@ -54,7 +51,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'upper legs',
 		target: 'glutes',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/lunge-exercise-illustration.gif',
 	},
 	{
 		id: 'fallback-jumping-jacks',
@@ -62,7 +58,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'cardio',
 		target: 'cardio',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/jumping-jacks-exercise-illustration.gif',
 	},
 	{
 		id: 'fallback-crunch',
@@ -70,7 +65,6 @@ const LOCAL_EXERCISE_FALLBACKS = [
 		bodyPart: 'waist',
 		target: 'abs',
 		equipment: 'body weight',
-		gifUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.gif',
 	},
 ];
 
@@ -143,7 +137,7 @@ function normalizeExercisesPayload(payload) {
 
 	return rawExercises
 		.map(normalizeExercise)
-		.filter((exercise) => Boolean(exercise && (exercise.hasGif || exercise.gifUrl)));
+		.filter(Boolean);
 }
 
 function getLocalFallbackExercises() {

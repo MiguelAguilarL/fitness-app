@@ -4,9 +4,7 @@ import SeriesCard from './SeriesCard'
 
 export default function SeriesSection({ completedCount, totalCount, series, onToggleSeries }) {
   return (
-    <View className="mt-10">
-      <Text className="text-[28px] font-black text-white">Series</Text>
-
+    <View className="mt-8">
       <View className="mt-4">
         {series.map((item) => (
           <SeriesCard
@@ -21,9 +19,11 @@ export default function SeriesSection({ completedCount, totalCount, series, onTo
         ))}
       </View>
 
-      <Text className="mt-2 text-[16px] text-[#7c8092]">
-        {completedCount} de {totalCount} completadas
-      </Text>
+      {completedCount > 0 && (
+        <Text className="mt-1.5 text-[15px] text-[#7c8092]">
+          {completedCount} de {totalCount} completadas
+        </Text>
+      )}
     </View>
   )
 }

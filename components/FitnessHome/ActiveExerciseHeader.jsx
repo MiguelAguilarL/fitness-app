@@ -10,16 +10,16 @@ export default function ActiveExerciseHeader() {
     <View className="pt-2">
       <View className="flex-row items-center justify-between">
         <TouchableOpacity 
-          className="h-20 w-20 items-center justify-center rounded-full bg-[#17151f] shadow-black/40"
+          className="h-16 w-16 items-center justify-center rounded-full bg-[#17151f] shadow-black/40"
           onPress={() => navigation.goBack()}
         >
-          <Feather name="chevron-left" size={34} color="#f5f0ff" />
+          <Feather name="chevron-left" size={30} color="#f5f0ff" />
         </TouchableOpacity>
 
-        <Text className="text-[20px] font-semibold text-[#9da2b3]">Ejercicio Activo</Text>
+        <Text className="text-[18px] font-semibold text-[#9da2b3]">Ejercicio Activo</Text>
 
-        <TouchableOpacity className="h-20 w-20 items-center justify-center rounded-full bg-[#17151f] shadow-black/40">
-          <Feather name="more-horizontal" size={28} color="#f5f0ff" />
+        <TouchableOpacity className="h-16 w-16 items-center justify-center rounded-full bg-[#17151f] shadow-black/40">
+          <Feather name="more-horizontal" size={24} color="#f5f0ff" />
         </TouchableOpacity>
       </View>
     </View>

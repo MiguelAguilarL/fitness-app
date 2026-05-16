@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import ActiveExerciseHeader from '../../components/FitnessHome/ActiveExerciseHeader'
 import ExerciseInfoSection from '../../components/FitnessHome/ExerciseInfoSection'
 import ExerciseVideoCard from '../../components/FitnessHome/ExerciseVideoCard'
-import TechniqueButton from '../../components/FitnessHome/TechniqueButton'
 import SeriesSection from '../../components/FitnessHome/SeriesSection'
 import RestTimerSection from '../../components/FitnessHome/RestTimerSection'
 
@@ -16,7 +15,7 @@ const exercise = {
 }
 
 const initialSeries = [
-  { id: 's1', label: 'S1', previous: 'Ant: 30×10', weight: '35', reps: '10', completed: true },
+  { id: 's1', label: 'S1', previous: 'Ant: 30×10', weight: '35', reps: '10', completed: false },
   { id: 's2', label: 'S2', previous: 'Ant: 30×10', weight: '35', reps: '10', completed: false },
   { id: 's3', label: 'S3', previous: 'Ant: 30×10', weight: '35', reps: '10', completed: false },
 ]
@@ -27,6 +26,7 @@ export default function ActiveExerciseScreen() {
   const [series, setSeries] = useState(initialSeries)
   const [restSeconds, setRestSeconds] = useState(restDuration)
   const [isResting, setIsResting] = useState(false)
+  const [activeRestSeriesId, setActiveRestSeriesId] = useState(null)
 
   useEffect(() => {
     if (!isResting) {
@@ -57,19 +57,37 @@ export default function ActiveExerciseScreen() {
   const handleToggleSeries = (seriesId) => {
     const currentItem = series.find((item) => item.id === seriesId)
     const nextCompleted = currentItem ? !currentItem.completed : false
+    const nextSeries = series.map((item) => {
+      if (item.id !== seriesId) {
+        return item
+      }
 
-    setSeries((currentSeries) =>
-      currentSeries.map((item) => {
-        if (item.id !== seriesId) {
-          return item
-        }
+      return { ...item, completed: nextCompleted }
+    })
 
-        return { ...item, completed: nextCompleted }
-      }),
-    )
+    setSeries(nextSeries)
 
-    setRestSeconds(restDuration)
-    setIsResting(nextCompleted)
+    if (nextCompleted) {
+      setActiveRestSeriesId(seriesId)
+      setRestSeconds(restDuration)
+      setIsResting(true)
+      return
+    }
+
+    if (activeRestSeriesId === seriesId) {
+      const remainingCompletedSeries = nextSeries.filter((item) => item.completed)
+      const fallbackSeries = remainingCompletedSeries[remainingCompletedSeries.length - 1]
+
+      if (fallbackSeries) {
+        setActiveRestSeriesId(fallbackSeries.id)
+        setIsResting(true)
+        return
+      }
+
+      setActiveRestSeriesId(null)
+      setRestSeconds(restDuration)
+      setIsResting(false)
+    }
   }
 
   const handleSkipRest = () => {
@@ -82,34 +100,36 @@ export default function ActiveExerciseScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#07060a" />
 
       <View className="absolute inset-0 bg-[#07060a]" />
-      <View className="absolute -top-20 left-0 h-52 w-52 rounded-full bg-[#25143f] opacity-30" />
-      <View className="absolute right-0 top-24 h-56 w-56 rounded-full bg-[#1b2447] opacity-20" />
+      <View className="absolute -top-24 left-[-32px] h-56 w-56 rounded-full bg-[#25143f] opacity-24" />
+      <View className="absolute right-[-28px] top-20 h-60 w-60 rounded-full bg-[#1b2447] opacity-16" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}
+        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 132 }}
       >
-        <ActiveExerciseHeader />
+        <View className="w-full max-w-[460px] self-center">
+          <ActiveExerciseHeader />
 
-        <ExerciseInfoSection title={exercise.title} muscles={exercise.muscles} exerciseImage={exercise.image} />
+          <ExerciseInfoSection title={exercise.title} muscles={exercise.muscles} exerciseImage={exercise.image} />
 
-        <ExerciseVideoCard image={exercise.image} />
+          <ExerciseVideoCard image={exercise.image} />
 
-        <TechniqueButton label="Ver Técnica" />
+          <SeriesSection
+            completedCount={completedCount}
+            totalCount={series.length}
+            series={series}
+            onToggleSeries={handleToggleSeries}
+          />
 
-        <SeriesSection
-          completedCount={completedCount}
-          totalCount={series.length}
-          series={series}
-          onToggleSeries={handleToggleSeries}
-        />
-
-        <RestTimerSection
-          label={isResting ? restLabel : '--:--'}
-          onSkipRest={handleSkipRest}
-          progress={isResting ? restSeconds / restDuration : 0}
-          disabled={!isResting}
-        />
+          {completedCount > 0 && (
+            <RestTimerSection
+              label={isResting ? restLabel : '--:--'}
+              onSkipRest={handleSkipRest}
+              progress={isResting ? restSeconds / restDuration : 0}
+              disabled={!isResting}
+            />
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   )

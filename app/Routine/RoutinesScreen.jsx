@@ -42,6 +42,7 @@ export default function RoutinesScreen({ navigation }) {
 
       <ScrollView
         className="flex-1 px-4"
+        contentContainerStyle={{ paddingBottom: 120 }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={loadRoutines} />}
         showsVerticalScrollIndicator={false}
       >

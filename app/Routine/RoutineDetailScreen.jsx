@@ -39,8 +39,8 @@ export default function RoutineDetailScreen({ route, navigation }) {
   }
 
   const handleStartRoutine = () => {
-    // TODO: Navegar a pantalla de entrenamiento con esta rutina
-    navigation.navigate('ActiveExercise')
+    // Navegar a la sesión de ejercicio activo pasando el id de la rutina
+    navigation.navigate('ActiveExerciseSession', { routineId })
   }
 
   if (loading || !routine) {

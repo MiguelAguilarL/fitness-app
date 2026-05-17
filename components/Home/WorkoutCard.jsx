@@ -46,7 +46,7 @@ export default function WorkoutCard() {
               label="Iniciar Entrenamiento" 
               size="card" 
               full 
-              onPress={() => navigation.navigate('FitnessHome')}
+              onPress={() => navigation.navigate('ActiveExerciseSession')}
             />
           </View>
         </View>

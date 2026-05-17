@@ -14,6 +14,7 @@ import CreateRoutineScreen from '../app/Routine/CreateRoutineScreen';
 import SelectExercisesScreen from '../app/Routine/SelectExercisesScreen';
 import RoutineDetailScreen from '../app/Routine/RoutineDetailScreen';
 import ActiveExerciseScreen from '../app/Fitness/ActiveExerciseScreen';
+import ActiveExerciseEntry from '../app/Fitness/ActiveExerciseEntry';
 import RestScreen from '../app/Fitness/RestScreen';
 import PerformanceScreen from '../app/Profile/PerformanceScreen';
 import ProfileScreen from '../app/Profile/ProfileScreen';
@@ -72,7 +73,7 @@ function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'INICIO' }} />
       <Tab.Screen name="FitnessHome" component={RoutinesScreen} options={{ tabBarLabel: 'RUTINAS' }} />
-      <Tab.Screen name="ActiveExercise" component={ActiveExerciseScreen} options={{ tabBarLabel: 'ENTRENAR' }} />
+      <Tab.Screen name="ActiveExercise" component={ActiveExerciseEntry} options={{ tabBarLabel: 'ENTRENAR' }} />
       <Tab.Screen name="Performance" component={PerformanceScreen} options={{ tabBarLabel: 'PROGRESO' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: 'PERFIL' }} />
     </Tab.Navigator>
@@ -89,6 +90,7 @@ export default function RootNavigator() {
         <Stack.Screen name="Exercises" component={ExerciseScreen} />
         <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="ActiveExerciseSession" component={ActiveExerciseScreen} />
         <Stack.Screen name="Rest" component={RestScreen} />
         <Stack.Group screenOptions={{ presentation: 'modal' }}>
           <Stack.Screen name="CreateRoutine" component={CreateRoutineScreen} />

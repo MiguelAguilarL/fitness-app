@@ -8,20 +8,21 @@ import SeriesSection from '../../components/FitnessHome/SeriesSection'
 import RestTimerSection from '../../components/FitnessHome/RestTimerSection'
 import { getRoutineById } from '../../utils/routinesStorage'
 
-const FALLBACK_EXERCISE_IMAGE =
-  'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1200&h=1200&fit=crop&q=80'
-
 const restDuration = 90
+const MAX_WEIGHT = 200
+const MAX_REPS = 25
+const MAX_SETS = 5
 
-function buildSeriesForExercise(exercise) {
-  const sets = Math.max(1, Number(exercise?.sets) || 3)
-  const reps = String(Number(exercise?.reps) || 10)
+function buildSeriesForExercise(exercise, overrideSets = undefined, overrideWeight = undefined) {
+  const sets = Math.min(MAX_SETS, Math.max(1, Number(overrideSets ?? exercise?.sets) || 3))
+  const reps = String(Math.min(MAX_REPS, Math.max(1, Number(exercise?.reps) || 10)))
+  const weight = String(Math.min(MAX_WEIGHT, Math.max(0, Number(overrideWeight ?? '0') || 0)))
 
   return Array.from({ length: sets }, (_, index) => ({
     id: `${exercise?.id ?? 'exercise'}-s${index + 1}`,
     label: `S${index + 1}`,
     previous: `Ant: --×${reps}`,
-    weight: '0',
+    weight,
     reps,
     completed: false,
   }))
@@ -33,6 +34,7 @@ export default function ActiveExerciseScreen({ route }) {
   const [loadingRoutine, setLoadingRoutine] = useState(true)
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [series, setSeries] = useState([])
+  const [currentSets, setCurrentSets] = useState(3)
   const [restSeconds, setRestSeconds] = useState(restDuration)
   const [isResting, setIsResting] = useState(false)
   const [activeRestSeriesId, setActiveRestSeriesId] = useState(null)
@@ -77,8 +79,10 @@ export default function ActiveExerciseScreen({ route }) {
       setSeries([])
       return
     }
-
-    setSeries(buildSeriesForExercise(currentExercise))
+    const initialSets = Math.min(MAX_SETS, Math.max(1, Number(currentExercise?.sets) || 3))
+    const initialWeight = Math.min(MAX_WEIGHT, Math.max(0, Number(currentExercise?.defaultWeight ?? currentExercise?.weight) || 0))
+    setCurrentSets(initialSets)
+    setSeries(buildSeriesForExercise(currentExercise, initialSets, initialWeight))
     setRestSeconds(restDuration)
     setIsResting(false)
     setActiveRestSeriesId(null)
@@ -114,7 +118,6 @@ export default function ActiveExerciseScreen({ route }) {
   const exerciseTitle = currentExercise?.name ?? 'Ejercicio'
   const exerciseMuscles =
     (currentExercise?.targetMuscles?.length ? currentExercise.targetMuscles : currentExercise?.bodyParts) ?? []
-  const exerciseImage = currentExercise?.imageUrl || FALLBACK_EXERCISE_IMAGE
   const exerciseInstructions = Array.isArray(currentExercise?.instructions)
     ? currentExercise.instructions.filter(Boolean)
     : []
@@ -153,6 +156,28 @@ export default function ActiveExerciseScreen({ route }) {
       setRestSeconds(restDuration)
       setIsResting(false)
     }
+  }
+
+  const handleChangeSets = (nextSets) => {
+    const safeSets = Math.min(MAX_SETS, Math.max(1, Number(nextSets) || 1))
+    setCurrentSets(safeSets)
+    setSeries(buildSeriesForExercise(currentExercise, safeSets, undefined))
+  }
+
+  const handleChangeSeriesWeight = (seriesId, value) => {
+    const normalized = String(value ?? '').replace(/[^0-9]/g, '')
+    const safeValue = String(Math.min(MAX_WEIGHT, Math.max(0, Number(normalized) || 0)))
+    setSeries((prev) =>
+      prev.map((item) => (item.id === seriesId ? { ...item, weight: safeValue } : item))
+    )
+  }
+
+  const handleChangeSeriesReps = (seriesId, value) => {
+    const normalized = String(value ?? '').replace(/[^0-9]/g, '')
+    const safeValue = String(Math.min(MAX_REPS, Math.max(1, Number(normalized) || 1)))
+    setSeries((prev) =>
+      prev.map((item) => (item.id === seriesId ? { ...item, reps: safeValue } : item))
+    )
   }
 
   const handleSkipRest = () => {
@@ -221,25 +246,32 @@ export default function ActiveExerciseScreen({ route }) {
           <ExerciseInfoSection
             title={exerciseTitle}
             muscles={exerciseMuscles.length ? exerciseMuscles : ['General']}
-            exerciseImage={exerciseImage}
           />
 
-          <ExerciseVideoCard image={exerciseImage} videoUrl={currentExercise?.videoUrl} />
+          <ExerciseVideoCard videoUrl={currentExercise?.videoUrl} />
 
-          <View className="mt-6 rounded-[22px] border border-white/6 bg-[#0f1220] p-4">
-            <Text className="text-white text-base font-semibold mb-3">Instrucciones</Text>
-            {exerciseInstructions.length ? (
-              <View className="gap-2">
-                {exerciseInstructions.map((step, index) => (
-                  <View key={`${currentExercise.id}-step-${index}`} className="flex-row items-start">
-                    <Text className="text-[#d6a6ff] mr-2 mt-0.5">{index + 1}.</Text>
-                    <Text className="text-[#d8d8df] flex-1 leading-5">{step}</Text>
-                  </View>
-                ))}
+          <View className="mt-4 rounded-[14px] border border-white/6 bg-[#0f1220] px-4 py-3">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm text-[#a9a9b8]">Series a realizar</Text>
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={() => handleChangeSets(currentSets - 1)}
+                  disabled={currentSets <= 1}
+                  className={`px-3 py-2 mr-2 rounded-lg ${currentSets <= 1 ? 'bg-[#111119] opacity-40' : 'bg-[#111119]'}`}
+                >
+                  <Text className="text-[#d6a6ff] text-lg font-bold">-</Text>
+                </TouchableOpacity>
+                <Text className="text-white text-lg font-bold">{currentSets}</Text>
+                <TouchableOpacity
+                  onPress={() => handleChangeSets(currentSets + 1)}
+                  disabled={currentSets >= MAX_SETS}
+                  className={`px-3 py-2 ml-2 rounded-lg ${currentSets >= MAX_SETS ? 'bg-[#111119] opacity-40' : 'bg-[#111119]'}`}
+                >
+                  <Text className="text-[#d6a6ff] text-lg font-bold">+</Text>
+                </TouchableOpacity>
               </View>
-            ) : (
-              <Text className="text-[#a9a9b8]">Sin instrucciones disponibles para este ejercicio.</Text>
-            )}
+            </View>
+            <Text className="text-xs text-[#7d8094] mt-2">Máximo {MAX_SETS} series.</Text>
           </View>
 
           <View className="mt-5 flex-row gap-3">
@@ -273,6 +305,8 @@ export default function ActiveExerciseScreen({ route }) {
             totalCount={series.length}
             series={series}
             onToggleSeries={handleToggleSeries}
+            onChangeSeriesWeight={handleChangeSeriesWeight}
+            onChangeSeriesReps={handleChangeSeriesReps}
           />
 
           {completedCount > 0 && (
@@ -283,6 +317,22 @@ export default function ActiveExerciseScreen({ route }) {
               disabled={!isResting}
             />
           )}
+
+          <View className="mt-6 rounded-[22px] border border-white/6 bg-[#0f1220] p-4">
+            <Text className="text-white text-base font-semibold mb-3">Instrucciones</Text>
+            {exerciseInstructions.length ? (
+              <View className="gap-2">
+                {exerciseInstructions.map((step, index) => (
+                  <View key={`${currentExercise.id}-step-${index}`} className="flex-row items-start">
+                    <Text className="text-[#d6a6ff] mr-2 mt-0.5">{index + 1}.</Text>
+                    <Text className="text-[#d8d8df] flex-1 leading-5">{step}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text className="text-[#a9a9b8]">Sin instrucciones disponibles para este ejercicio.</Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

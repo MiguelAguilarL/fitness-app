@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Pressable } from 'react-native'
+import { View, Text, ScrollView, Pressable, Image } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PrimaryButton from '../../components/PrimaryButton'
@@ -110,15 +110,20 @@ export default function RoutineDetailScreen({ route, navigation }) {
                 className="rounded-[14px] bg-[#0f1220] border border-white/6 p-4"
               >
                 <View className="flex-row items-center gap-3">
-                  <View className="w-8 h-8 rounded-full bg-[#d6a6ff]/20 items-center justify-center">
-                    <Text className="text-xs font-bold text-[#d6a6ff]">{index + 1}</Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-semibold text-white">{exercise.name}</Text>
-                    <Text className="text-sm text-[#b9a9cc] mt-1">
-                      {exercise.sets} series × {exercise.reps} reps
-                    </Text>
-                  </View>
+                      <View className="w-8 h-8 rounded-full bg-[#d6a6ff]/20 items-center justify-center">
+                        <Text className="text-xs font-bold text-[#d6a6ff]">{index + 1}</Text>
+                      </View>
+
+                      <View className="flex-1">
+                        {exercise.imageUrl ? (
+                          <Image source={{ uri: exercise.imageUrl }} className="w-full h-36 rounded-md mb-3" resizeMode="cover" />
+                        ) : null}
+
+                        <Text className="text-base font-semibold text-white">{exercise.name}</Text>
+                        <Text className="text-sm text-[#b9a9cc] mt-1">
+                          {exercise.sets} series × {exercise.reps} reps
+                        </Text>
+                      </View>
                 </View>
               </View>
             ))}

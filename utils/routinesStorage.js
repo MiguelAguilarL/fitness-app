@@ -88,6 +88,12 @@ const normalizeExercise = (exercise, index = 0) => {
     instructions: Array.isArray(exercise?.instructions) ? exercise.instructions : [],
     bodyParts: Array.isArray(exercise?.bodyParts) ? exercise.bodyParts : [],
     targetMuscles: Array.isArray(exercise?.targetMuscles) ? exercise.targetMuscles : [],
+    secondaryMuscles: Array.isArray(exercise?.secondaryMuscles) ? exercise.secondaryMuscles : [],
+    equipments: Array.isArray(exercise?.equipments) ? exercise.equipments : [],
+    keywords: Array.isArray(exercise?.keywords) ? exercise.keywords : [],
+    exerciseType: String(exercise?.exerciseType ?? '').trim(),
+    overview: String(exercise?.overview ?? '').trim(),
+    sourceUrl: String(exercise?.sourceUrl ?? '').trim() || null,
     sets: Number(exercise?.sets) || 3,
     reps: Number(exercise?.reps) || 10,
   }

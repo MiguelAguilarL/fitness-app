@@ -1,10 +1,10 @@
 import React from 'react'
-import { Text, View, ImageBackground } from 'react-native'
+import { Text, View } from 'react-native'
 
-export default function ExerciseInfoSection({ title, muscles, exerciseImage }) {
+export default function ExerciseInfoSection({ title, muscles }) {
   return (
-    <View className="mt-8 flex-row items-start justify-between gap-4">
-      <View className="flex-1">
+    <View className="mt-8">
+      <View>
         <Text className="text-[48px] font-black leading-[52px] text-white">{title}</Text>
 
         <View className="mt-6 self-start rounded-full border border-[#4a2e7a] bg-[#22182e] px-4 py-2">
@@ -14,14 +14,6 @@ export default function ExerciseInfoSection({ title, muscles, exerciseImage }) {
           </Text>
         </View>
       </View>
-
-      <ImageBackground
-        source={{ uri: exerciseImage }}
-        className="mt-2 h-[180px] w-[150px] overflow-hidden rounded-[30px]"
-        imageStyle={{ resizeMode: 'cover' }}
-      >
-        <View className="absolute inset-0 bg-black/30" />
-      </ImageBackground>
     </View>
   )
 }

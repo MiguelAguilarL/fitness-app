@@ -11,7 +11,7 @@ import {
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { searchExercises } from '../../utils/api'
+import { getFeaturedExercises, searchExercises } from '../../utils/api'
 
 export default function SelectExercisesScreen() {
   const nav = useNavigation()
@@ -58,6 +58,12 @@ export default function SelectExercisesScreen() {
           instructions: Array.isArray(exercise.instructions) ? exercise.instructions : [],
           bodyParts: Array.isArray(exercise.bodyParts) ? exercise.bodyParts : [],
           targetMuscles: Array.isArray(exercise.targetMuscles) ? exercise.targetMuscles : [],
+          secondaryMuscles: Array.isArray(exercise.secondaryMuscles) ? exercise.secondaryMuscles : [],
+          equipments: Array.isArray(exercise.equipments) ? exercise.equipments : [],
+          keywords: Array.isArray(exercise.keywords) ? exercise.keywords : [],
+          exerciseType: String(exercise.exerciseType ?? '').trim(),
+          overview: String(exercise.overview ?? '').trim(),
+          sourceUrl: String(exercise.sourceUrl ?? '').trim() || null,
         },
       }
     })
@@ -75,7 +81,12 @@ export default function SelectExercisesScreen() {
     const normalizedQuery = searchQuery.trim()
 
     if (!normalizedQuery) {
-      setResults([])
+      try {
+        const featured = await getFeaturedExercises()
+        setResults(Array.isArray(featured) ? featured : [])
+      } catch (err) {
+        setResults([])
+      }
       setError('')
       return
     }
@@ -98,12 +109,32 @@ export default function SelectExercisesScreen() {
     }
   }
 
+  React.useEffect(() => {
+    let mounted = true
+
+    const loadFeatured = async () => {
+      try {
+        const items = await getFeaturedExercises()
+        if (mounted) setResults(Array.isArray(items) ? items : [])
+      } catch (err) {
+        if (mounted) setResults([])
+      }
+    }
+
+    loadFeatured()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   const renderItem = ({ item }) => {
     const isSelected = selected.has(item.id)
+    const subtitle = [item.equipments?.[0], item.overview].filter(Boolean).join(' • ')
 
     return (
       <TouchableOpacity
-          onPress={() => toggle(item)}
+        onPress={() => toggle(item)}
         className={`flex-row items-center p-3 rounded-lg my-2 ${
           isSelected ? 'bg-[#0f1220] border border-white/6' : 'bg-transparent'
         }`}
@@ -118,6 +149,11 @@ export default function SelectExercisesScreen() {
 
         <View className="flex-1">
           <Text className="text-white font-semibold text-base">{item.name}</Text>
+          {!!subtitle && (
+            <Text numberOfLines={2} className="text-[#a9a9b8] text-xs mt-1">
+              {subtitle}
+            </Text>
+          )}
         </View>
 
         <View className="ml-3">
@@ -158,15 +194,20 @@ export default function SelectExercisesScreen() {
             onChangeText={setSearchQuery}
             onSubmitEditing={runSearch}
             returnKeyType="search"
-            placeholder="Buscar ejercicio por nombre"
+            placeholder="Buscar por palabra clave o equipo"
             placeholderTextColor="#6b7280"
             className="flex-1 text-white ml-2"
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity
-              onPress={() => {
+              onPress={async () => {
                 setSearchQuery('')
-                setResults([])
+                try {
+                  const featured = await getFeaturedExercises()
+                  setResults(Array.isArray(featured) ? featured : [])
+                } catch (err) {
+                  setResults([])
+                }
                 setError('')
               }}
               className="p-1"
@@ -201,8 +242,8 @@ export default function SelectExercisesScreen() {
             <View className="py-16 items-center justify-center">
               <Text className="text-[#a9a9b8] text-center">
                 {searchQuery.trim()
-                  ? 'No hay resultados. Prueba otra palabra clave.'
-                  : 'Busca por nombre para agregar ejercicios a tu rutina.'}
+                  ? 'No hay resultados. Prueba con otra palabra clave o equipo.'
+                  : 'Se muestran ejercicios desde la API (hasta ~10). Busca por palabra clave o equipo.'}
               </Text>
             </View>
           ) : null

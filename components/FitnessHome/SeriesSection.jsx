@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, View } from 'react-native'
 import SeriesCard from './SeriesCard'
 
-export default function SeriesSection({ completedCount, totalCount, series, onToggleSeries }) {
+export default function SeriesSection({ completedCount, totalCount, series, onToggleSeries, onChangeSeriesWeight, onChangeSeriesReps }) {
   return (
     <View className="mt-8">
       <View className="mt-4">
@@ -15,6 +15,8 @@ export default function SeriesSection({ completedCount, totalCount, series, onTo
             reps={item.reps}
             completed={item.completed}
             onToggle={() => onToggleSeries(item.id)}
+            onChangeWeight={(nextWeight) => onChangeSeriesWeight(item.id, nextWeight)}
+            onChangeReps={(nextReps) => onChangeSeriesReps(item.id, nextReps)}
           />
         ))}
       </View>

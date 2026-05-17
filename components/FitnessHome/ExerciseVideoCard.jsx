@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ImageBackground, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { VideoView, useVideoPlayer } from 'expo-video'
 
@@ -34,27 +34,16 @@ export default function ExerciseVideoCard({ image, videoUrl }) {
             />
           </View>
         ) : (
-          <ImageBackground source={{ uri: image }} className="h-[220px] w-full" imageStyle={{ resizeMode: 'cover' }}>
-            <View className="absolute inset-0 bg-black/55" />
-            <View className="absolute inset-0 bg-[#261040]/20" />
-
-            <View className="flex-1 items-center justify-center">
-              <View className="h-20 w-20 items-center justify-center rounded-full bg-[#8f46ff] shadow-black/30">
-                <Feather name="play" size={36} color="#ffffff" style={{ marginLeft: 5 }} />
-              </View>
+          <View className="h-[220px] w-full items-center justify-center rounded-[24px] bg-[#0f1220] px-6">
+            <View className="h-20 w-20 items-center justify-center rounded-full bg-[#8f46ff] shadow-black/30">
+              <Feather name="play" size={36} color="#ffffff" style={{ marginLeft: 5 }} />
             </View>
 
-            <View className="absolute bottom-3 right-3 rounded-full bg-black/25 px-3 py-1.5">
-              <Text className="text-[13px] font-semibold tracking-[1.8px] text-white/60">SIN VIDEO</Text>
-            </View>
-          </ImageBackground>
-        )}
-
-        <View className="absolute bottom-3 right-3 rounded-full bg-black/25 px-3 py-1.5">
-          <Text className="text-[13px] font-semibold tracking-[1.8px] text-white/60">
-            {normalizedVideoUrl ? 'VIDEO' : 'TÉCNICA'}
-          </Text>
+            <Text className="mt-4 text-center text-sm text-[#a9a9b8]">
+              No hay video disponible para este ejercicio.
+            </Text>
           </View>
+        )}
       </View>
     </View>
   )

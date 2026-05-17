@@ -1,10 +1,8 @@
 import React from 'react'
 import { View, Text, ImageBackground, Pressable } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
 import PrimaryButton from '../PrimaryButton'
 
-export default function WorkoutCard({ onCardPress }) {
-  const navigation = useNavigation()
+export default function WorkoutCard({ onCardPress, onStartPress }) {
   return (
     <Pressable onPress={onCardPress} disabled={!onCardPress}>
       <ImageBackground
@@ -47,7 +45,7 @@ export default function WorkoutCard({ onCardPress }) {
                 label="Iniciar Entrenamiento" 
                 size="card" 
                 full 
-                onPress={() => navigation.navigate('ActiveExerciseSession')}
+                onPress={onStartPress}
               />
             </View>
           </View>

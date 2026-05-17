@@ -1,70 +1,50 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const EXERCISE_CACHE_STORAGE_KEY = '@fitness-app:exercise-db-cache:v3';
-const SESSION_CACHE = new Map();
-const EXERCISEDB_RESOURCE_PREFIX = 'exercises';
-export const EXERCISE_DB_DEFAULT_CONFIG = {
+const EXERCISE_QUERY_CACHE_STORAGE_KEY = '@fitness-app:exercise-search-cache:v1';
+const SESSION_QUERY_CACHE = new Map();
+const DEFAULT_BASE_URL = 'https://edb-with-videos-and-images-by-ascendapi.p.rapidapi.com';
+const CACHE_TTL_MS = 1000 * 60 * 60 * 24;
+
+export const EXERCISE_DB_V2_DEFAULT_CONFIG = {
 	apiKey: process.env.EXPO_PUBLIC_EXERCISEDB_API_KEY ?? '',
-	host: process.env.EXPO_PUBLIC_EXERCISEDB_HOST ?? 'exercisedb.p.rapidapi.com',
-};
-const KNOWN_TARGET_ALIASES = {
-	back: ['espalda', 'back', 'lumbar', 'dorsal'],
-	chest: ['pecho', 'chest', 'pectoral'],
-	shoulders: ['hombros', 'shoulders', 'deltoides'],
-	legs: ['piernas', 'legs', 'cuadriceps', 'muslos'],
-	biceps: ['biceps', 'bíceps'],
-	triceps: ['triceps', 'tríceps'],
-	abs: ['abdominales', 'abs', 'core', 'abdomen'],
-	glutes: ['gluteos', 'glúteos', 'glutes', 'nalgas'],
-	calves: ['pantorrillas', 'calves', 'gemelos'],
-	forearms: ['antebrazos', 'forearms'],
-	lats: ['dorsales', 'lats'],
-	traps: ['trapecios', 'traps'],
-	hamstrings: ['isquiotibiales', 'hamstrings'],
+	host:
+		process.env.EXPO_PUBLIC_EXERCISEDB_HOST ??
+		'edb-with-videos-and-images-by-ascendapi.p.rapidapi.com',
+	baseUrl: process.env.EXPO_PUBLIC_EXERCISEDB_BASE_URL ?? DEFAULT_BASE_URL,
 };
 
-const LOCAL_EXERCISE_FALLBACKS = [
+const LOCAL_SEARCH_FALLBACKS = [
 	{
-		id: 'fallback-push-up',
+		id: 'local-push-up',
 		name: 'Push Up',
-		bodyPart: 'chest',
-		target: 'pectorals',
-		equipment: 'body weight',
+		imageUrl:
+			'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=720&h=720&fit=crop&q=80',
+		videoUrl: null,
+		instructions: ['Mantén el cuerpo alineado y desciende con control antes de empujar hacia arriba.'],
 	},
 	{
-		id: 'fallback-bodyweight-squat',
+		id: 'local-squat',
 		name: 'Bodyweight Squat',
-		bodyPart: 'upper legs',
-		target: 'quadriceps',
-		equipment: 'body weight',
+		imageUrl:
+			'https://images.unsplash.com/photo-1434682772747-f16d3ea162c3?w=720&h=720&fit=crop&q=80',
+		videoUrl: null,
+		instructions: ['Lleva la cadera hacia atrás, baja con pecho erguido y sube empujando desde los talones.'],
 	},
 	{
-		id: 'fallback-plank',
-		name: 'Plank',
-		bodyPart: 'waist',
-		target: 'abs',
-		equipment: 'body weight',
-	},
-	{
-		id: 'fallback-lunge',
+		id: 'local-lunge',
 		name: 'Walking Lunge',
-		bodyPart: 'upper legs',
-		target: 'glutes',
-		equipment: 'body weight',
+		imageUrl:
+			'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=720&h=720&fit=crop&q=80',
+		videoUrl: null,
+		instructions: ['Da un paso largo, baja ambas rodillas con control y alterna piernas al avanzar.'],
 	},
 	{
-		id: 'fallback-jumping-jacks',
-		name: 'Jumping Jacks',
-		bodyPart: 'cardio',
-		target: 'cardio',
-		equipment: 'body weight',
-	},
-	{
-		id: 'fallback-crunch',
-		name: 'Crunch',
-		bodyPart: 'waist',
-		target: 'abs',
-		equipment: 'body weight',
+		id: 'local-plank',
+		name: 'Plank',
+		imageUrl:
+			'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=720&h=720&fit=crop&q=80',
+		videoUrl: null,
+		instructions: ['Aprieta abdomen y glúteos para mantener una línea recta del cuello a los tobillos.'],
 	},
 ];
 
@@ -80,35 +60,53 @@ function normalizeText(value) {
 		.replace(/\s+/g, ' ');
 }
 
-function buildCacheKey(type, query) {
-	return `${type}:${normalizeText(query)}`;
-}
-
-function safeArray(value) {
-	return Array.isArray(value) ? value : [];
-}
-
-function normalizeGifUrl(urlValue) {
-	const rawUrl = String(urlValue ?? '').trim();
-
-	if (!rawUrl) {
+function normalizeUrl(value) {
+	const url = String(value ?? '').trim();
+	if (!url) {
 		return null;
 	}
 
-	if (/^http:\/\//i.test(rawUrl)) {
-		return rawUrl.replace(/^http:\/\//i, 'https://');
+	if (/^http:\/\//i.test(url)) {
+		return url.replace(/^http:\/\//i, 'https://');
 	}
 
-	return rawUrl;
+	return url;
 }
 
-function normalizeHasGif(value) {
-	if (typeof value === 'boolean') {
-		return value;
+function ensureArray(value) {
+	return Array.isArray(value) ? value : [];
+}
+
+function pickFirstNonEmpty(values) {
+	for (const value of values) {
+		if (value === undefined || value === null) {
+			continue;
+		}
+
+		const normalized = String(value).trim();
+		if (normalized) {
+			return normalized;
+		}
 	}
 
-	const normalizedValue = String(value ?? '').trim().toLowerCase();
-	return normalizedValue === 'true' || normalizedValue === '1' || normalizedValue === 'yes';
+	return '';
+}
+
+function buildCacheKey(query) {
+	return `query:${normalizeText(query)}`;
+}
+
+function normalizeInstructions(exercise) {
+	const instructions = ensureArray(exercise?.instructions)
+		.map((step) => String(step ?? '').trim())
+		.filter(Boolean);
+
+	if (instructions.length) {
+		return instructions;
+	}
+
+	const overview = String(exercise?.overview ?? '').trim();
+	return overview ? [overview] : [];
 }
 
 function normalizeExercise(exercise) {
@@ -116,97 +114,93 @@ function normalizeExercise(exercise) {
 		return null;
 	}
 
-	const gifUrl = normalizeGifUrl(exercise.gifUrl);
-	const hasGif = normalizeHasGif(exercise.hasGif) || Boolean(gifUrl);
+	const id = pickFirstNonEmpty([exercise.exerciseId, exercise.id]);
+	const name = pickFirstNonEmpty([exercise.name]);
+
+	if (!id || !name) {
+		return null;
+	}
+
+	const imageUrl = normalizeUrl(
+		exercise.imageUrl ??
+			exercise.imageUrls?.['720p'] ??
+			exercise.imageUrls?.['480p'] ??
+			exercise.imageUrls?.['360p']
+	);
+	const videoUrl = normalizeUrl(exercise.videoUrl);
 
 	return {
-		...exercise,
-		hasGif,
-		gifUrl,
+		id,
+		name,
+		imageUrl,
+		videoUrl,
+		instructions: normalizeInstructions(exercise),
+		bodyParts: ensureArray(exercise.bodyParts).map((item) => String(item)),
+		targetMuscles: ensureArray(exercise.targetMuscles).map((item) => String(item)),
+		equipments: ensureArray(exercise.equipments).map((item) => String(item)),
+		overview: String(exercise.overview ?? '').trim(),
 	};
 }
 
-function normalizeExercisesPayload(payload) {
+function normalizeSearchPayload(payload) {
 	const rawExercises = Array.isArray(payload)
 		? payload
-		: Array.isArray(payload?.data)
-			? payload.data
-			: Array.isArray(payload?.results)
-				? payload.results
-				: [];
+		: Array.isArray(payload?.results)
+			? payload.results
+			: Array.isArray(payload?.data)
+				? payload.data
+				: Array.isArray(payload?.exercises)
+					? payload.exercises
+					: [];
 
-	return rawExercises
-		.map(normalizeExercise)
-		.filter(Boolean);
-}
+	const results = [];
+	const seenIds = new Set();
 
-function getLocalFallbackExercises() {
-	return LOCAL_EXERCISE_FALLBACKS.map(normalizeExercise).filter(Boolean);
-}
-
-function searchLocalExercises(query) {
-	const normalizedQuery = normalizeText(query);
-	const exercises = getLocalFallbackExercises();
-
-	if (!normalizedQuery) {
-		return exercises;
-	}
-
-	return exercises.filter((exercise) => {
-		return [exercise?.name, exercise?.bodyPart, exercise?.target, exercise?.equipment].some((field) =>
-			normalizeText(field).includes(normalizedQuery)
-		);
-	});
-}
-
-function getLocalExercisesForTargets(targets) {
-	const resolvedTargets = Array.from(new Set(targets.map(normalizeText).filter(Boolean)));
-
-	if (!resolvedTargets.length) {
-		return getLocalFallbackExercises();
-	}
-
-	const mergedExercises = [];
-	const seenKeys = new Set();
-
-	resolvedTargets.forEach((target) => {
-		searchLocalExercises(target).forEach((exercise) => {
-			const uniqueKey = String(exercise?.id ?? exercise?.name ?? '').toLowerCase();
-
-			if (!uniqueKey || seenKeys.has(uniqueKey)) {
-				return;
-			}
-
-			seenKeys.add(uniqueKey);
-			mergedExercises.push(exercise);
-		});
-	});
-
-	return mergedExercises.length ? mergedExercises : getLocalFallbackExercises();
-}
-
-function padWithLocalFallbackExercises(exercises, minimumCount = 5) {
-	const mergedExercises = [];
-	const seenKeys = new Set();
-
-	[...safeArray(exercises), ...getLocalFallbackExercises()].forEach((exercise) => {
-		const uniqueKey = String(exercise?.id ?? exercise?.name ?? '').toLowerCase();
-
-		if (!uniqueKey || seenKeys.has(uniqueKey)) {
+	rawExercises.forEach((exercise) => {
+		const normalizedExercise = normalizeExercise(exercise);
+		if (!normalizedExercise) {
 			return;
 		}
 
-		seenKeys.add(uniqueKey);
-		mergedExercises.push(exercise);
+		if (seenIds.has(normalizedExercise.id)) {
+			return;
+		}
+
+		seenIds.add(normalizedExercise.id);
+		results.push(normalizedExercise);
 	});
 
-	return mergedExercises.slice(0, Math.max(minimumCount, mergedExercises.length));
+	return results;
 }
 
-function createExerciseDBError(message, details = {}) {
+function searchLocalFallbackExercises(query) {
+	const normalizedQuery = normalizeText(query);
+	if (!normalizedQuery) {
+		return LOCAL_SEARCH_FALLBACKS;
+	}
+
+	return LOCAL_SEARCH_FALLBACKS.filter((exercise) =>
+		normalizeText(exercise.name).includes(normalizedQuery)
+	);
+}
+
+function createApiError(message, details = {}) {
 	const error = new Error(message);
 	error.details = details;
 	return error;
+}
+
+function isExpired(savedAtIsoString) {
+	if (!savedAtIsoString) {
+		return true;
+	}
+
+	const savedAtTime = new Date(savedAtIsoString).getTime();
+	if (!Number.isFinite(savedAtTime)) {
+		return true;
+	}
+
+	return Date.now() - savedAtTime > CACHE_TTL_MS;
 }
 
 async function hydrateCache() {
@@ -215,7 +209,7 @@ async function hydrateCache() {
 	}
 
 	if (!cacheHydrationPromise) {
-		cacheHydrationPromise = AsyncStorage.getItem(EXERCISE_CACHE_STORAGE_KEY)
+		cacheHydrationPromise = AsyncStorage.getItem(EXERCISE_QUERY_CACHE_STORAGE_KEY)
 			.then((rawValue) => {
 				if (!rawValue) {
 					return;
@@ -223,14 +217,20 @@ async function hydrateCache() {
 
 				const parsedValue = JSON.parse(rawValue);
 
-				Object.entries(parsedValue ?? {}).forEach(([key, entry]) => {
-					if (entry && Array.isArray(entry.value)) {
-						SESSION_CACHE.set(key, entry);
+				Object.entries(parsedValue ?? {}).forEach(([cacheKey, cacheValue]) => {
+					if (!cacheValue || !Array.isArray(cacheValue.value)) {
+						return;
 					}
+
+					if (isExpired(cacheValue.savedAt)) {
+						return;
+					}
+
+					SESSION_QUERY_CACHE.set(cacheKey, cacheValue);
 				});
 			})
 			.catch(() => {
-				SESSION_CACHE.clear();
+				SESSION_QUERY_CACHE.clear();
 			})
 			.finally(() => {
 				isCacheHydrated = true;
@@ -242,317 +242,170 @@ async function hydrateCache() {
 }
 
 async function persistCache() {
-	const payload = Object.fromEntries(SESSION_CACHE.entries());
-	await AsyncStorage.setItem(EXERCISE_CACHE_STORAGE_KEY, JSON.stringify(payload));
+	const payload = Object.fromEntries(SESSION_QUERY_CACHE.entries());
+	await AsyncStorage.setItem(EXERCISE_QUERY_CACHE_STORAGE_KEY, JSON.stringify(payload));
 }
 
-function getCachedExercises(cacheKey) {
-	const entry = SESSION_CACHE.get(cacheKey);
-	return entry?.value ?? null;
+function getCachedSearch(cacheKey) {
+	const cacheEntry = SESSION_QUERY_CACHE.get(cacheKey);
+	if (!cacheEntry || isExpired(cacheEntry.savedAt)) {
+		SESSION_QUERY_CACHE.delete(cacheKey);
+		return null;
+	}
+
+	return cacheEntry.value;
 }
 
-async function setCachedExercises(cacheKey, value, meta = {}) {
-	SESSION_CACHE.set(cacheKey, {
+async function setCachedSearch(cacheKey, value) {
+	SESSION_QUERY_CACHE.set(cacheKey, {
+		savedAt: new Date().toISOString(),
 		value,
-		meta: {
-			savedAt: new Date().toISOString(),
-			...meta,
-		},
 	});
 
 	await persistCache();
 }
 
-function normalizeTarget(target) {
-	const normalizedTarget = normalizeText(target);
-
-	for (const [canonicalTarget, aliases] of Object.entries(KNOWN_TARGET_ALIASES)) {
-		if (canonicalTarget === normalizedTarget || aliases.includes(normalizedTarget)) {
-			return canonicalTarget;
-		}
-	}
-
-	return normalizedTarget;
+function createSearchCandidates(query) {
+	const encodedQuery = encodeURIComponent(query);
+    
+	return [
+		`exercises/search?query=${encodedQuery}`,
+		`exercises?query=${encodedQuery}`,
+		`exercises/name/${encodedQuery}`,
+		`exercises/search/${encodedQuery}`,
+	];
 }
 
-function inferTargetFromProfile(profile) {
-	const recommendedSplit = normalizeText(profile?.recommendedSplit?.label ?? profile?.recommendedSplit ?? '');
-	const goal = normalizeText(profile?.goal?.label ?? profile?.goal ?? '');
-	const focusArea = normalizeText(profile?.focusArea?.label ?? profile?.focusArea ?? '');
-
-	if (recommendedSplit.includes('push/pull/legs') || recommendedSplit.includes('upper/lower')) {
-		return focusArea.includes('upper') ? ['push', 'pull', 'back'] : ['legs', 'squat', 'lunge'];
+async function parseErrorResponse(response) {
+	try {
+		const text = await response.text();
+		return text ? text.slice(0, 300) : '';
+	} catch {
+		return '';
 	}
-
-	if (recommendedSplit.includes('full body') || focusArea.includes('full')) {
-		return ['compound', 'barbell', 'dumbbell'];
-	}
-
-	if (goal.includes('gana') || goal.includes('muscle')) {
-		return focusArea.includes('upper') ? ['chest', 'back', 'pull'] : ['legs', 'squat', 'deadlift'];
-	}
-
-	if (goal.includes('grasa') || goal.includes('fat')) {
-		return ['cardio', 'burpee', 'jump'];
-	}
-
-	return focusArea.includes('lower') ? ['legs', 'squat'] : ['push', 'pull'];
 }
 
-async function fetchUniqueExercises(client, targets) {
-	const resolvedTargets = Array.from(new Set(targets.filter(Boolean)));
-	const settledResults = await Promise.allSettled(
-		resolvedTargets.map((target) => client.getExercisesByName(target))
-	);
-
-	const mergedExercises = [];
-	const seenKeys = new Set();
-
-	settledResults.forEach((result) => {
-		if (result.status !== 'fulfilled') {
-			return;
-		}
-
-		safeArray(result.value).forEach((exercise) => {
-			const uniqueKey = String(exercise?.id ?? exercise?.name ?? '').toLowerCase();
-
-			if (!uniqueKey || seenKeys.has(uniqueKey)) {
-				return;
-			}
-
-			seenKeys.add(uniqueKey);
-			mergedExercises.push(exercise);
-		});
-	});
-
-	return mergedExercises;
-}
-
-export class ExerciseDBClient {
-	constructor({ apiKey, host, baseUrl = 'https://exercisedb.p.rapidapi.com' } = {}) {
+export class ExerciseDBV2Client {
+	constructor({ apiKey, host, baseUrl = DEFAULT_BASE_URL } = {}) {
 		this.apiKey = apiKey ?? '';
-		this.host = host ?? 'exercisedb.p.rapidapi.com';
-		this.baseUrl = String(baseUrl).replace(/\/$/, '');
+		this.host = host ?? EXERCISE_DB_V2_DEFAULT_CONFIG.host;
+		this.baseUrl = String(baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, '');
 	}
 
 	isConfigured() {
 		return Boolean(this.apiKey && this.host);
 	}
 
-	async getExercisesByTarget(target) {
-		return this._getExercises('target', target);
-	}
-
-	async getExercisesByName(name) {
-		return this._getExercises('name', name);
-	}
-
-	async getExercisesByEquipment(equipment) {
-		return this._getExercises('equipment', equipment);
-	}
-
-	async getRecommendedExercises(profile) {
-		const targets = inferTargetFromProfile(profile);
-		const cacheKey = buildCacheKey('profile', `${profile?.recommendedSplit?.label ?? profile?.recommendedSplit ?? ''}-${profile?.goal?.label ?? profile?.goal ?? ''}-${profile?.focusArea?.label ?? profile?.focusArea ?? ''}`);
-
-		await hydrateCache();
-
-		const cachedExercises = getCachedExercises(cacheKey);
-		if (cachedExercises) {
-			return cachedExercises;
-		}
-
-		let exercises = [];
-
-		try {
-			exercises = await fetchUniqueExercises(this, targets);
-		} catch (error) {
-			console.warn('[ExerciseDB] falling back to local recommended exercises', { error: String(error) });
-		}
-
-		if (!exercises.length) {
-			exercises = getLocalExercisesForTargets(targets);
-		}
-
-		exercises = padWithLocalFallbackExercises(exercises, 5);
-
-		await setCachedExercises(cacheKey, exercises, { type: 'profile', targets });
-
-		return exercises;
-	}
-
 	async searchExercises(query) {
 		const normalizedQuery = normalizeText(query);
 		if (!normalizedQuery) {
-			return getLocalFallbackExercises();
+			return [];
 		}
 
 		await hydrateCache();
 
-		const cacheKey = buildCacheKey('name', normalizedQuery);
-
-		const cachedExercises = getCachedExercises(cacheKey);
-		if (cachedExercises) {
-			return cachedExercises;
+		const cacheKey = buildCacheKey(normalizedQuery);
+		const cachedResult = getCachedSearch(cacheKey);
+		if (cachedResult) {
+			return cachedResult;
 		}
 
-		let exercises = [];
+		let results = [];
 
 		try {
-			exercises = await this.getExercisesByName(normalizedQuery);
+			results = await this._searchFromNetwork(normalizedQuery);
 		} catch (error) {
-			console.warn('[ExerciseDB] falling back to local search results', { error: String(error), query: normalizedQuery });
+			console.warn('[ExerciseDBV2] network search failed, using local fallback', {
+				query: normalizedQuery,
+				error: String(error),
+			});
 		}
 
-		if (!exercises.length) {
-			exercises = searchLocalExercises(normalizedQuery);
+		if (!results.length) {
+			results = searchLocalFallbackExercises(normalizedQuery);
 		}
 
-		await setCachedExercises(cacheKey, exercises, { type: 'name', query: normalizedQuery });
-
-		return exercises;
+		await setCachedSearch(cacheKey, results);
+		return results;
 	}
 
-	async _getExercises(type, value) {
-		const normalizedValue = normalizeText(value);
-
-		if (!normalizedValue) {
-			return getLocalFallbackExercises();
-		}
-
-		const cacheKey = buildCacheKey(type, normalizedValue);
-
-		await hydrateCache();
-
-		const cachedExercises = getCachedExercises(cacheKey);
-		if (cachedExercises) {
-			return cachedExercises;
-		}
-
-		const pathValue = encodeURIComponent(type === 'target' ? normalizeTarget(normalizedValue) : normalizedValue);
-		let exercises = [];
-
-		try {
-			exercises = await this._makeRequest(`${EXERCISEDB_RESOURCE_PREFIX}/${type}/${pathValue}`);
-		} catch (error) {
-			console.warn('[ExerciseDB] falling back to local exercises', { error: String(error), type, value: normalizedValue });
-		}
-
-		if (!exercises.length) {
-			exercises = searchLocalExercises(normalizedValue);
-		}
-
-		await setCachedExercises(cacheKey, exercises, { type, query: normalizedValue });
-
-		return exercises;
-	}
-
-	async _makeRequest(endpoint) {
+	async _searchFromNetwork(query) {
 		if (!this.isConfigured()) {
-			throw createExerciseDBError('ExerciseDB credentials are missing. Add apiKey and host before using the client.', {
-				type: 'credentials',
-			});
+			throw createApiError('ExerciseDB V2 credentials are missing.', { type: 'credentials' });
 		}
 
-		let response;
+		const candidates = createSearchCandidates(query);
+		let lastHttpError = null;
 
-		const fullUrl = `${this.baseUrl}/${endpoint}`;
+		for (const endpoint of candidates) {
+			const fullUrl = `${this.baseUrl}/${endpoint}`;
 
-		try {
-			response = await fetch(fullUrl, {
-				method: 'GET',
-				headers: {
-					'x-rapidapi-host': this.host,
-					'x-rapidapi-key': this.apiKey,
-				},
-			});
-		} catch (fetchError) {
-			console.error('[ExerciseDB] network error', { fullUrl, error: String(fetchError) });
-			throw createExerciseDBError(`ExerciseDB request failed: ${fetchError.message}`, {
-				type: 'network',
-				endpoint,
-				fullUrl,
-			});
-		}
-
-		if (!response.ok) {
-			let errorBody = '';
-
+			let response;
 			try {
-				errorBody = await response.text();
-			} catch {
-				errorBody = '';
-			}
-
-			console.error('[ExerciseDB] http error', { fullUrl, status: response.status, body: errorBody });
-
-			const statusLabel =
-				response.status === 401 || response.status === 403
-					? 'credentials are invalid or unauthorized'
-					: response.status === 429
-						? 'rate limit reached'
-						: response.status === 400
-							? 'bad request (400) - payload or parameters invalid'
-							: 'request failed';
-
-			throw createExerciseDBError(
-				`ExerciseDB failed (status ${response.status}): ${errorBody || statusLabel}`,
-				{
-					type: 'http',
-					status: response.status,
-					endpoint,
-					fullUrl,
-					body: errorBody || null,
-				}
-			);
-		}
-
-		try {
-			const payload = await response.json();
-			const exercises = normalizeExercisesPayload(payload);
-
-			if (!exercises.length) {
-				console.warn('[ExerciseDB] no exercises parsed from payload', {
-					endpoint,
-					payloadType: Array.isArray(payload) ? 'array' : typeof payload,
+				response = await fetch(fullUrl, {
+					method: 'GET',
+					headers: {
+						'X-RapidAPI-Key': this.apiKey,
+						'X-RapidAPI-Host': this.host,
+					},
 				});
+			} catch (networkError) {
+				lastHttpError = createApiError('ExerciseDB V2 request failed.', {
+					type: 'network',
+					fullUrl,
+					error: String(networkError),
+				});
+				continue;
 			}
 
-			return exercises;
-		} catch (parseError) {
-			throw createExerciseDBError(`ExerciseDB response could not be parsed: ${parseError.message}`, {
-				type: 'parse',
-				endpoint,
-			});
+			if (!response.ok) {
+				const errorBody = await parseErrorResponse(response);
+				lastHttpError = createApiError(
+					`ExerciseDB V2 returned ${response.status}${errorBody ? `: ${errorBody}` : ''}`,
+					{ type: 'http', endpoint, status: response.status, fullUrl }
+				);
+
+				if (response.status >= 500 || response.status === 404 || response.status === 400) {
+					continue;
+				}
+
+				throw lastHttpError;
+			}
+
+			const payload = await response.json();
+			const normalizedResults = normalizeSearchPayload(payload);
+			if (normalizedResults.length) {
+				return normalizedResults;
+			}
 		}
+
+		if (lastHttpError) {
+			throw lastHttpError;
+		}
+
+		return [];
 	}
 }
 
-export function createExerciseDBClient(config = {}) {
-	return new ExerciseDBClient(config);
-}
-
-export async function getExercisesForUserProfile(profile, config = {}) {
-	const client = new ExerciseDBClient(config);
-	return client.getRecommendedExercises(profile);
+export function createExerciseDBV2Client(config = {}) {
+	return new ExerciseDBV2Client({ ...EXERCISE_DB_V2_DEFAULT_CONFIG, ...config });
 }
 
 export async function searchExercises(query, config = {}) {
-	const client = new ExerciseDBClient(config);
+	const client = createExerciseDBV2Client(config);
 	return client.searchExercises(query);
 }
 
 export async function clearExerciseCache() {
-	SESSION_CACHE.clear();
+	SESSION_QUERY_CACHE.clear();
 	isCacheHydrated = false;
 	cacheHydrationPromise = null;
-	await AsyncStorage.removeItem(EXERCISE_CACHE_STORAGE_KEY);
+	await AsyncStorage.removeItem(EXERCISE_QUERY_CACHE_STORAGE_KEY);
 }
 
 export default {
-	ExerciseDBClient,
-	createExerciseDBClient,
-	getExercisesForUserProfile,
+	ExerciseDBV2Client,
+	createExerciseDBV2Client,
 	searchExercises,
 	clearExerciseCache,
 };

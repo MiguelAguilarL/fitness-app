@@ -70,6 +70,11 @@ export default function CreateRoutineScreen({ navigation, route }) {
       const mapped = selected.map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
+        imageUrl: exercise.imageUrl ?? null,
+        videoUrl: exercise.videoUrl ?? null,
+        instructions: Array.isArray(exercise.instructions) ? exercise.instructions : [],
+        bodyParts: Array.isArray(exercise.bodyParts) ? exercise.bodyParts : [],
+        targetMuscles: Array.isArray(exercise.targetMuscles) ? exercise.targetMuscles : [],
         sets: 3,
         reps: 10,
       }))

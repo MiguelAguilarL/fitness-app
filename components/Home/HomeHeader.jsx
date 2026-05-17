@@ -18,7 +18,7 @@ export default function HomeHeader({ userName = 'Usuario' }) {
       <View className="mt-3">
         <Text className="text-[#d6a6ff] text-[31px] leading-8 font-extrabold">¡Tu puedes,</Text>
         <Text className="text-[#d6a6ff] text-[31px] leading-8 font-extrabold">({userName})!</Text>
-        <Text className="text-[#b9a9cc] mt-1 text-[17px]">¿Listo para ser el mejor?</Text>
+        
       </View>
     </View>
   )

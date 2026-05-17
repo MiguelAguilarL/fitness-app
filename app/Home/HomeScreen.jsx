@@ -5,8 +5,6 @@ import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/Home/HomeHeader'
 import StreakRow from '../../components/Home/StreakRow'
-import WorkoutCard from '../../components/Home/WorkoutCard'
-import SessionTile from '../../components/Home/SessionTile'
 import { useQuestionnaire } from '../../context/QuestionnaireContext'
 
 export default function HomeScreen() {
@@ -24,13 +22,7 @@ export default function HomeScreen() {
 
         <View style={{ marginTop: 18 }} />
 
-        <Text className="text-[#d6a6ff] text-[26px] font-extrabold">Sesión de hoy</Text>
-
-        <WorkoutCard />
-
-        <View className="h-5" />
-
-        <SessionTile />
+        
 
         <TouchableOpacity
           activeOpacity={0.9}

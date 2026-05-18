@@ -57,7 +57,7 @@ export default function StreakRow() {
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap' }}>
         {days.map((item, index) => (
           <DayPill
             key={index}

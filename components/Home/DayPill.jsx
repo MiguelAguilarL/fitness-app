@@ -44,13 +44,13 @@ export default function DayPill({ day = 'L', dateNum = '24', active = false, has
 
     if (onPress) {
       return (
-        <TouchableOpacity style={{ alignItems: 'center', marginRight: 6 }} activeOpacity={0.9} onPress={onPress}>
+        <TouchableOpacity style={{ alignItems: 'center', marginHorizontal: 4 }} activeOpacity={0.9} onPress={onPress}>
           {PillContent}
         </TouchableOpacity>
       )
     } else {
       return (
-        <View style={{ alignItems: 'center', marginRight: 6 }}>
+        <View style={{ alignItems: 'center', marginHorizontal: 4 }}>
           {PillContent}
         </View>
       )
@@ -81,14 +81,14 @@ export default function DayPill({ day = 'L', dateNum = '24', active = false, has
 
   if (onPress) {
     return (
-      <TouchableOpacity style={{ alignItems: 'center', marginRight: 6 }} activeOpacity={0.9} onPress={onPress}>
+      <TouchableOpacity style={{ alignItems: 'center', marginHorizontal: 4 }} activeOpacity={0.9} onPress={onPress}>
         {PillContent}
         {Dot}
       </TouchableOpacity>
     )
   } else {
     return (
-      <View style={{ alignItems: 'center', marginRight: 6 }}>
+      <View style={{ alignItems: 'center', marginHorizontal: 4 }}>
         {PillContent}
         {Dot}
       </View>

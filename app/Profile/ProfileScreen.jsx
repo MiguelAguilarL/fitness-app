@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, StatusBar, TouchableOpacity, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { Feather } from '@expo/vector-icons'
 import ProgressBar from '../../components/ProgressBar'
+import { loadUserProfile, saveUserProfile } from '../../utils/userProfileStorage'
 
 const quickStats = [
   { label: 'Entrenamientos', value: '128', icon: 'repeat' },
@@ -41,12 +42,34 @@ export default function ProfileScreen() {
   const [userLevel, setUserLevel] = useState('Avanzado')
   const [sessionCount, setSessionCount] = useState('18')
 
+  useEffect(() => {
+    let active = true
+
+    const loadProfile = async () => {
+      const storedProfile = await loadUserProfile()
+      if (active) {
+        setUserName(storedProfile.userName)
+      }
+    }
+
+    loadProfile()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   const handleToggleEdit = () => {
     setIsEditing((value) => !value)
   }
 
-  const handleSaveProfile = () => {
-    setIsEditing(false)
+  const handleSaveProfile = async () => {
+    try {
+      await saveUserProfile({ userName })
+      setIsEditing(false)
+    } catch (error) {
+      console.error('Error saving profile name:', error)
+    }
   }
 
   return (
